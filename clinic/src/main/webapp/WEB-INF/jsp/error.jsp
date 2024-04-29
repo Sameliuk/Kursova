@@ -1,13 +1,13 @@
-
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <meta charset="UTF-8">
     <title>Error</title>
 </head>
 <body>
 <h1>Error</h1>
-<p>${message}</p>
+
+<p style="color: red;"><%= request.getAttribute("message") %></p>
+
+<p><a href="<%= request.getContextPath() %>">Back to Home</a></p>
 </body>
 </html>

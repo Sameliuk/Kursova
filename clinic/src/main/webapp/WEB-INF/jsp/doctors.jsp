@@ -1,33 +1,14 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>List of Doctors</title>
+    <title>Doctor Details</title>
 </head>
 <body>
-<h1>List of Doctors</h1>
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Specialty</th>
-        <!-- Додайте інші потрібні поля -->
-    </tr>
-    </thead>
-    <tbody>
-    <jsp:useBean id="doctors" scope="request" type="java.util.List"/>
-    <c:forEach items="${doctors}" var="doctor">
-        <tr>
-            <td>${doctor.id}</td>
-            <td>${doctor.name}</td>
-            <td>${doctor.specialty}</td>
-            <!-- Додайте інші поля, які потрібно відображати -->
-        </tr>
-    </c:forEach>
-    </tbody>
-</table>
+<h1>Doctor Details</h1>
+<h3>Name: <%= request.getAttribute("doctorName") %></h3>
+<h3>Specialty: <%= request.getAttribute("doctorSpecialty") %></h3>
+<h3>Schedule: <%= request.getAttribute("doctorSchedule") %></h3>
+
+<a href="<%= request.getContextPath() %>/do/">Back to Home</a>
 </body>
 </html>

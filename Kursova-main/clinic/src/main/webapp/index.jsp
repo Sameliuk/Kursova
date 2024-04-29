@@ -11,6 +11,7 @@
 <ul>
     <li><a href="do/login">Login</a></li>
     <li><a href="do/doctors">View Doctors</a></li>
+    <li><a href="do/schedule">Schedule</a></li>
 </ul>
 </body>
 </html>

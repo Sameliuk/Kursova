@@ -8,21 +8,13 @@ public class Doctor {
     private String specialty;
     private List<String> schedule;
 
-    public Doctor(int id, String name, String specialty) {
-        this.doctorId = id;
-        this.name = name;
-        this.specialty = specialty;
-        this.schedule = schedule;
-    }
 
-    // Конструктор з усіма полями
     public Doctor(Integer doctorId, String name, String specialty, List<String> schedule) {
         this.doctorId = doctorId;
         this.name = name;
         this.specialty = specialty;
         this.schedule = schedule;
     }
-
 
     public Integer getDoctorId() {
         return doctorId;
