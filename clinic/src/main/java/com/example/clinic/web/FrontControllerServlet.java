@@ -1,21 +1,21 @@
 package com.example.clinic.web;
 
 import com.example.clinic.dao.AppointmentDAO;
-import com.example.clinic.dao.impl.inmemory.InMemoryAppointmentDAO;
+//import com.example.clinic.dao.impl.inmemory.InMemoryAppointmentDAO;
 import com.example.clinic.dao.impl.inmemory.InMemoryDatabase;
 import com.example.clinic.model.Appointment;
 import com.example.clinic.model.Doctor;
+import com.example.clinic.model.Schedule;
 import com.example.clinic.model.User;
-import com.example.clinic.services.AppointmentService;
-import com.example.clinic.services.AppointmentServiceImpl;
-import com.example.clinic.services.DoctorService;
-import com.example.clinic.services.UserService;
+import com.example.clinic.services.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,24 +28,18 @@ import static com.example.clinic.services.AppointmentService.*;
 @WebServlet(name = "FrontControllerServlet", urlPatterns = {"/do/*"})
 public class FrontControllerServlet extends HttpServlet {
 
+    AppointmentService appointmentService;
     DoctorService doctorService;
     UserService userService;
+    ScheduleService scheduleService;
 
     @Override
-    public void init() throws ServletException {
-        doctorService = new DoctorService();
-        userService = new UserService() {
-            @Override
-            public List<User> getAllUsers() {
-                return null;
-            }
-
-            @Override
-            public User getUserById(Integer id) {
-                return null;
-            }
-
-        };
+    public void init(ServletConfig config) throws ServletException {
+        super.init();
+        appointmentService = (AppointmentService) config.getServletContext().getAttribute("appointmentService");
+        doctorService = (DoctorService) config.getServletContext().getAttribute("doctorService");
+        userService = (UserService) config.getServletContext().getAttribute("userService");
+        scheduleService = (ScheduleService) config.getServletContext().getAttribute("scheduleService");
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -83,51 +77,41 @@ public class FrontControllerServlet extends HttpServlet {
     }
 
     protected void doctors(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Collection<Doctor> doctors = doctorService.getAllDoctors();
+        Collection<Doctor> doctors = doctorService.findAll();
         request.setAttribute("doctors", doctors);
         request.getRequestDispatcher("/WEB-INF/jsp/doctors.jsp").forward(request, response);
     }
 
     protected void schedule(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int doctorId = Integer.parseInt(request.getParameter("doctorId"));
-        Doctor doctor = doctorService.getDoctorById(doctorId);
-        request.setAttribute("doctor", doctor);
-        request.getRequestDispatcher("/WEB-INF/jsp/schedule.jsp").forward(request, response);
+        Collection<Schedule> schedules = scheduleService.findAll();
+        request.setAttribute("schedules", schedules);
+        request.getRequestDispatcher("/WEB-INF/jsp/doctors.jsp").forward(request, response);
     }
 
     protected void appointment(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Получаем параметры запроса
-        int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
-        int userId = Integer.parseInt(request.getParameter("userId"));
-        int doctorId = Integer.parseInt(request.getParameter("doctorId"));
-        String startTime = request.getParameter("startTime");
-        String endTime = request.getParameter("endTime");
-        String description = request.getParameter("description");
-
-
-        Appointment appointment = new Appointment(appointmentId, userId, doctorId, LocalDateTime.parse(startTime), LocalDateTime.parse(endTime), description);
-
-
-        AppointmentDAO appointmentDAO = new InMemoryAppointmentDAO(new InMemoryDatabase());
-        AppointmentService appointmentService = new AppointmentServiceImpl(appointmentDAO) {
-            @Override
-            public Collection<Appointment> getAllAppointments() {
-                return appointmentDAO.findAll();
-            }
-
-            @Override
-            public Appointment getAppointmentById(Integer id) {
-                return appointmentDAO.get(id);
-            }
-
-        };
-        appointmentService.addAppointment(appointment);
-        response.sendRedirect(request.getContextPath() + "/success.jsp");
+        String command = request.getParameter("command");
+        if (command == null) {
+            command = "showAppointment";
+        }
+        switch (command) {
+            case "delete":
+                deleteAppointment(request, response);
+                break;
+            case "create":
+                createAppointment(request, response);
+                break;
+            case "save":
+                saveAppointment(request, response);
+                break;
+            case "edit":
+                showEditForm(request, response);
+            case "showAppointment":
+            default:
+                showAppointment(request, response);
+        }
     }
 
-
-    protected void login(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getSession().invalidate();
 
         String login = request.getParameter("login");
@@ -147,9 +131,11 @@ public class FrontControllerServlet extends HttpServlet {
         response.sendRedirect(".");
     }
 
-    protected void logout(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getSession().invalidate();
+    protected void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
         response.sendRedirect(".");
     }
 
@@ -158,6 +144,64 @@ public class FrontControllerServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(request, response);
     }
 
+    private void createAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            LocalDateTime startTime = LocalDateTime.parse(request.getParameter("startTime"));
+            LocalDateTime endTime = LocalDateTime.parse(request.getParameter("endTime"));
+            Appointment appointment = new Appointment(startTime, endTime);
+            appointmentService.addAppointment(appointment);
+            response.sendRedirect("");
+        } catch (Exception e) {
+            response.sendError(400);
+        }
+    }
+    private void deleteAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Integer id = Integer.valueOf(request.getParameter("id"));
+            appointmentService.deleteAppointment(id);
+            response.sendRedirect("");
+        } catch (Exception e) {
+            response.sendError(400);
+        }
+    }
+
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Integer id = Integer.valueOf(request.getParameter("id"));
+            Appointment appointment = appointmentService.getAppointmentById(id);
+            request.setAttribute("appointment", appointment);
+            request.getRequestDispatcher("WEB-INF/jsp/edit.jsp").forward(request, response);
+        } catch (Exception e) {
+            response.sendError(400);
+        }
+    }
+    private void showAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        Integer id = Integer.valueOf(request.getParameter("id"));
+        Collection<Appointment> appointments = appointmentService.getAppointmentsByUserId(id);
+        request.setAttribute("appointments", appointments);
+        request.getRequestDispatcher("WEB-INF/jsp/appointment.jsp").forward(request, response);
+    }
+
+    private void saveAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Integer id = Integer.valueOf(request.getParameter("id"));
+            Integer userId = Integer.valueOf(request.getParameter("userId"));
+            Integer doctorId = Integer.valueOf(request.getParameter("doctorId"));
+            LocalDateTime startTime = LocalDateTime.parse(request.getParameter("startTime"));
+            LocalDateTime endTime = LocalDateTime.parse(request.getParameter("endTime"));
+
+            Appointment appointment = new Appointment(id, userId , doctorId, startTime, endTime );
+            appointmentService.updateAppointment(appointment);
+            response.sendRedirect("");
+        } catch (Exception e) {
+            response.sendError(400);
+        }
+    }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

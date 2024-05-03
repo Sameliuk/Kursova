@@ -1,37 +1,19 @@
 package com.example.clinic.services;
 
 import com.example.clinic.model.User;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-public abstract class UserService {
-    private static Map<String, User> users = new HashMap<>();
+import java.util.Collection;
 
+public interface   UserService {
 
-    public User getByLogin(String login) {
-        return users.get(login);
-    }
+   void create(User user);
+   User findById(Integer id);
 
-    public boolean authenticate(String login, String password) {
-        User user = getByLogin(login);
-        return user != null && user.getPassword().equals(password);
-    }
+   Collection<User> findAll();
 
-    public abstract List<User> getAllUsers();
+   User getByLogin(String login);
 
-    public void addUser(User user) {
-        users.put(user.getLogin(), user);
-    }
+   boolean checkPassword(User user, String password);
 
-    public boolean checkPassword(User user, String password) {
-        return user.getPassword().equals(password);
-    }
-
-    public abstract User getUserById(Integer id);
-
-    public User getUserByLogin(String login) {
-        return users.get(login);
-    }
-
+   void delete(Integer id);
 }

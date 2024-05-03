@@ -9,8 +9,6 @@ public interface AbstractDAO<T> {
 
     Collection<T> findAll();
 
-    void insert(T entity);
-
     void insert(T entity, boolean generateId);
 
     void delete(T entity);

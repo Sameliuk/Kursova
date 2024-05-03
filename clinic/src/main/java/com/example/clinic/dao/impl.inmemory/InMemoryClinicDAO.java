@@ -6,29 +6,35 @@ class InMemoryClinicDAO implements ClinicDAO {
 
     InMemoryDatabase database;
 
-    UserDAO userDao;
-    DoctorDAO doctorDao;
-    AppointmentDAO appointmentDao;
+    UserDAO userDAO;
+    DoctorDAO doctorDAO;
+    AppointmentDAO appointmentDAO;
+    ScheduleDAO scheduleDAO;
 
     InMemoryClinicDAO(InMemoryDatabase database) {
         this.database = database;
 
-        userDao = new InMemoryUserDAO(database);
-        doctorDao = new InMemoryDoctorDAO(database);
-        appointmentDao = new InMemoryAppointmentDAO(database);
+        userDAO = new InMemoryUserDAO(database);
+        doctorDAO = new InMemoryDoctorDAO(database);
+        appointmentDAO = new InMemoryAppointmentDAO(database);
     }
 
     @Override
-    public UserDAO getUserDao() {
-        return userDao;
+    public UserDAO getUserDAO() {
+        return userDAO;
     }
 
-    public DoctorDAO getDoctorDao() {
-        return doctorDao;
+    public DoctorDAO getDoctorDAO() {
+        return doctorDAO;
     }
 
-    public AppointmentDAO getAppointmentDao() {
-        return appointmentDao;
+    public AppointmentDAO getAppointmentDAO() {
+        return appointmentDAO;
+    }
+
+    @Override
+    public ScheduleDAO getScheduleDAO() {
+        return scheduleDAO;
     }
 
 }

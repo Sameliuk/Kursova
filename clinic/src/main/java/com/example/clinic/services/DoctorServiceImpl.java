@@ -1,39 +1,34 @@
 package com.example.clinic.services;
 
-import com.example.clinic.dao.DoctorDAO;
+import com.example.clinic.dao.ClinicDAO;
 import com.example.clinic.model.Doctor;
 
-import java.util.List;
+import java.util.Collection;
 
-public class DoctorServiceImpl extends DoctorService {
-    private DoctorDAO doctorDAO;
+public class DoctorServiceImpl implements DoctorService {
 
-    public DoctorServiceImpl(DoctorDAO doctorDAO) {
-        this.doctorDAO = doctorDAO;
+    ClinicDAO clinicDAO;
+
+    public DoctorServiceImpl(ClinicDAO clinicDAO) {
+        this.clinicDAO = clinicDAO;
+    }
+    @Override
+    public Doctor findById(Integer id) {
+        return clinicDAO.getDoctorDAO().findById(id);
     }
 
     @Override
-    public List<Doctor> getAllDoctors() {
-        return (List<Doctor>) doctorDAO.findAll();
+    public Collection<Doctor> findAll() {
+        return clinicDAO.getDoctorDAO().findAll();
     }
 
     @Override
-    public Doctor getDoctorById(int id) {
-        return doctorDAO.get(id);
+    public void create(Doctor doctor) {
+       clinicDAO.getDoctorDAO().create(doctor);
     }
 
     @Override
-    public void addDoctor(Doctor doctor) {
-        doctorDAO.insert(doctor);
-    }
-
-    @Override
-    public void updateDoctor(Doctor updatedDoctor) {
-        doctorDAO.update(updatedDoctor);
-    }
-
-    @Override
-    public void deleteDoctor(int id) {
-        doctorDAO.delete(id);
+    public void delete(Integer id) {
+        clinicDAO.getDoctorDAO().delete(id);
     }
 }

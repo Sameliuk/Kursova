@@ -6,11 +6,11 @@ import com.example.clinic.dao.DoctorDAO;
 import com.example.clinic.dao.UserDAO;
 import com.example.clinic.dao.impl.inmemory.InMemoryDatabase;
 import com.example.clinic.dao.impl.inmemory.InMemoryTestData;
-import com.example.clinic.model.Appointment;
+import com.example.clinic.model.Schedule;
 import com.example.clinic.services.*;
 import jakarta.servlet.*;
 
-import java.util.Collection;
+import java.util.function.UnaryOperator;
 
 public class ApplicationContextListener implements ServletContextListener {
 
@@ -18,30 +18,22 @@ public class ApplicationContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
 
         InMemoryDatabase database = new InMemoryDatabase();
-
         InMemoryTestData.generateTo(database);
+        sce.getServletContext().setAttribute("database", database);
 
         ClinicDAO clinicDAO = database.getClinicDAO();
 
-        DoctorService doctorService = new DoctorServiceImpl((DoctorDAO) clinicDAO);
+        DoctorService doctorService = new DoctorServiceImpl(clinicDAO);
         sce.getServletContext().setAttribute("doctorService", doctorService);
 
-        AppointmentService appointmentService = new AppointmentServiceImpl((AppointmentDAO) clinicDAO) {
-            @Override
-            public Collection<Appointment> getAllAppointments() {
-                return appointmentDAO.findAll();
-            }
-
-            @Override
-            public Appointment getAppointmentById(Integer id) {
-                return appointmentDAO.get(id);
-            }
-
-        };
+        AppointmentService appointmentService = new AppointmentServiceImpl(clinicDAO);
         sce.getServletContext().setAttribute("appointmentService", appointmentService);
 
-        UserService userService = new UserServiceImpl((UserDAO) clinicDAO);
+        UserService userService = new UserServiceImpl(clinicDAO,  UnaryOperator.identity());
         sce.getServletContext().setAttribute("userService", userService);
+
+        ScheduleService scheduleService = new ScheduleServiceImpl(clinicDAO);
+        sce.getServletContext().setAttribute("scheduleService", scheduleService);
     }
 
     @Override

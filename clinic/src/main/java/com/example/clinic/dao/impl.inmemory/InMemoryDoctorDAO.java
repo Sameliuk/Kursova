@@ -2,19 +2,20 @@ package com.example.clinic.dao.impl.inmemory;
 
 import com.example.clinic.dao.DoctorDAO;
 import com.example.clinic.model.Doctor;
+import com.example.clinic.model.User;
+
 import java.util.Collection;
-import java.util.Map;
+import java.util.TreeMap;
 
-public class InMemoryDoctorDAO implements DoctorDAO {
-    private final Map<Integer, Doctor> doctors;
-    private int nextDoctorId = 1;
+class InMemoryDoctorDAO extends InMemoryAbstractDAO<Doctor> implements DoctorDAO {
 
-    public InMemoryDoctorDAO(InMemoryDatabase database) {
-        this.doctors = database.doctors;
+    InMemoryDoctorDAO(InMemoryDatabase database) {
+        super(database.doctors, Doctor::getDoctorId, Doctor::setDoctorId, database);
     }
+    private  TreeMap<Integer, Doctor> doctors = new TreeMap<>();
 
     @Override
-    public Doctor get(Integer id) {
+    public Doctor findById(Integer id) {
         return doctors.get(id);
     }
 
@@ -24,18 +25,14 @@ public class InMemoryDoctorDAO implements DoctorDAO {
     }
 
     @Override
-    public void insert(Doctor doctor) {
-
+    public void create(Doctor doctor) {
+        int id = doctors.isEmpty() ? 1 : doctors.lastKey() + 1;
+        doctor.setDoctorId(id);
+        doctors.put(id, doctor);
     }
-
-    @Override
-    public void update(Doctor doctor) {
-
-    }
-
     @Override
     public void delete(Integer id) {
-
+        doctors.remove(id);
     }
 
 }

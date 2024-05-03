@@ -5,13 +5,10 @@ import com.example.clinic.model.Doctor;
 import java.util.Collection;
 
 public interface DoctorDAO {
-    Doctor get(Integer id);
+    Doctor findById(Integer id);
 
     Collection<Doctor> findAll();
-
-    void insert(Doctor doctor);
-
-    void update(Doctor doctor);
+    void create(Doctor doctor);
 
     void delete(Integer id);
 }

@@ -7,20 +7,16 @@ import java.util.Collection;
 
 public interface AppointmentDAO {
 
-    Appointment get(Integer id);
+    Appointment findById(Integer id);
 
     Collection<Appointment> findAll();
 
-    void insert(Appointment appointment);
+    void create(Appointment appointment);
 
+    void update(Appointment appointment);
 
     void delete(Integer id);
 
     Collection<Appointment> findByUserId(Integer userId);
 
-    void addAppointment(User user, Appointment appointment);
-
-    void deleteAppointment(Integer appointmentId);
-
-    Collection<Appointment> findByUserId();
 }

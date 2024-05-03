@@ -2,9 +2,11 @@ package com.example.clinic.dao;
 
 public interface ClinicDAO {
 
-    UserDAO getUserDao();
+    UserDAO getUserDAO();
 
-    DoctorDAO getDoctorDao();
+    DoctorDAO getDoctorDAO();
 
-    AppointmentDAO getAppointmentDao();
+    AppointmentDAO getAppointmentDAO();
+
+    ScheduleDAO getScheduleDAO();
 }

@@ -2,20 +2,19 @@ package com.example.clinic.dao.impl.inmemory;
 
 import com.example.clinic.dao.AppointmentDAO;
 import com.example.clinic.model.Appointment;
-import com.example.clinic.model.User;
 
 import java.util.*;
 
-public class InMemoryAppointmentDAO implements AppointmentDAO {
-    private final Map<Integer, Appointment> appointments;
-    private int nextId = 1;
+class InMemoryAppointmentDAO extends InMemoryAbstractDAO<Appointment> implements AppointmentDAO {
 
-    public InMemoryAppointmentDAO(InMemoryDatabase database) {
-        this.appointments = new HashMap<>();
+    InMemoryAppointmentDAO(InMemoryDatabase database) {
+        super(database.appointments, Appointment::getAppointmentId, Appointment::setAppointmentId, database);
     }
+    private TreeMap<Integer, Appointment> appointments = new TreeMap<>();
+
 
     @Override
-    public Appointment get(Integer id) {
+    public Appointment findById(Integer id) {
         return appointments.get(id);
     }
 
@@ -25,9 +24,15 @@ public class InMemoryAppointmentDAO implements AppointmentDAO {
     }
 
     @Override
-    public void insert(Appointment entity) {
-        entity.setAppointmentId(nextId++);
-        appointments.put(entity.getAppointmentId(), entity);
+    public void create(Appointment appointment) {
+        int id = appointments.isEmpty() ? 1 : appointments.lastKey() + 1;
+        appointment.setAppointmentId(id);
+        appointments.put(id, appointment);
+    }
+
+    @Override
+    public void update(Appointment appointment) {
+        appointments.put(appointment.getAppointmentId(), appointment);
     }
 
     @Override
@@ -46,20 +51,4 @@ public class InMemoryAppointmentDAO implements AppointmentDAO {
         return userAppointments;
     }
 
-    @Override
-    public void addAppointment(User user, Appointment appointment) {
-        appointment.setUserId(user.getUserId());
-        insert(appointment);
-    }
-
-    @Override
-    public void deleteAppointment(Integer appointmentId) {
-        delete(appointmentId);
-    }
-
-    @Override
-    public Collection<Appointment> findByUserId() {
-        // Цей метод, ймовірно, не потрібний, оскільки маємо findByUserId(Integer userId)
-        return null;
-    }
 }

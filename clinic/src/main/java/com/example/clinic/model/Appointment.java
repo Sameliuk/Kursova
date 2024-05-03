@@ -9,17 +9,21 @@ public class Appointment {
     private Integer appointmentId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private String description;
-    private User user;
-    private Doctor doctor;
 
-    public Appointment(Integer appointmentId, int user, int doctor, LocalDateTime startTime, LocalDateTime endTime, String description) {
+
+    public Appointment(Integer appointmentId, int user, int doctor, LocalDateTime startTime, LocalDateTime endTime) {
         this.appointmentId = appointmentId;
         this.userId = user;
         this.doctorId = doctor;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.description = description;
+
+    }
+
+    public Appointment(LocalDateTime startTime, LocalDateTime endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+
     }
 
     public Integer getAppointmentId() {
@@ -62,11 +66,4 @@ public class Appointment {
         this.endTime = endTime;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

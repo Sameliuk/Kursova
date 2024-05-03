@@ -1,7 +1,5 @@
 package com.example.clinic.model;
 
-import java.util.Objects;
-
 public class User {
     private Integer userId;
     private String login;
@@ -17,6 +15,11 @@ public class User {
         this.role = role;
     }
 
+    public User(String login, String password, String fullName) {
+        this.login = login;
+        this.password = password;
+        this.fullName = fullName;
+    }
 
     public Integer getUserId() {
         return userId;
@@ -58,31 +61,4 @@ public class User {
         this.role = role;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(userId, user.userId) &&
-                Objects.equals(login, user.login) &&
-                Objects.equals(password, user.password) &&
-                Objects.equals(fullName, user.fullName) &&
-                Objects.equals(role, user.role);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, login, password, fullName, role);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", role='" + role + '\'' +
-                '}';
-    }
 }

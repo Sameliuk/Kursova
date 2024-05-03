@@ -1,28 +1,19 @@
 package com.example.clinic.services;
 
-import com.example.clinic.dao.AppointmentDAO;
 import com.example.clinic.model.Appointment;
 import com.example.clinic.model.User;
 
 import java.util.Collection;
 
-public abstract class AppointmentService {
+public interface AppointmentService {
 
-    protected AppointmentDAO appointmentDAO;
+     Appointment getAppointmentById(Integer id);
 
-    public AppointmentService() {
-        this.appointmentDAO = appointmentDAO;
-    }
+     void addAppointment(Appointment appointment);
 
-    public abstract Collection<Appointment> getAllAppointments();
+    void updateAppointment(Appointment appointment);
 
-    public abstract Appointment getAppointmentById(Integer id);
+    void deleteAppointment(Integer id);
 
-    public abstract void addAppointment(Appointment appointment);
-
-    public abstract void addAppointment(User user, Appointment appointment);
-
-    public abstract void deleteAppointment(Integer id);
-
-    public abstract Collection<Appointment> getAppointmentsByUserId(Integer userId);
+    Collection<Appointment> getAppointmentsByUserId(Integer userId);
 }

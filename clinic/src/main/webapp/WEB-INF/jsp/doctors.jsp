@@ -1,14 +1,30 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Doctor Details</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Doctors</title>
 </head>
 <body>
-<h1>Doctor Details</h1>
-<h3>Name: <%= request.getAttribute("doctorName") %></h3>
-<h3>Specialty: <%= request.getAttribute("doctorSpecialty") %></h3>
-<h3>Schedule: <%= request.getAttribute("doctorSchedule") %></h3>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Speciality</th>
+        <th>Name</th>
+        <th>Schedule</th>
+    </tr>
+    </thead>
+    <tbody>
+    <c:forEach var="doctor" items="${doctors}">
+        <tr>
+            <td><c:out value="${doctor.speciality}"/></td>
+            <td><c:out value="${doctor.name}"/></td>
+            <td><c:out value="${doctor.schedule}"/></td>
+        </tr>
+    </c:forEach>
+    </tbody>
+</table>
 
-<a href="<%= request.getContextPath() %>/do/">Back to Home</a>
 </body>
 </html>
